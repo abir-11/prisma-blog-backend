@@ -4,8 +4,19 @@ enum Status {
   Blocked
 }
 
-enum Role{
-    User
-    Author
-    Admin
+enum Role {
+  User
+  Author
+  Admin
+}
+
+enum PostStatus {
+  Draft
+  Published
+  Archived
+}
+
+enum commentStatus {
+  Approved
+  Reject
 }

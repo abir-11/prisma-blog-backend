@@ -1,30 +1,56 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { usersService } from "./users.service";
-import  httpStatus  from "http-status";
+import httpStatus from "http-status";
+import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
 
-const createUser=async(req:Request,res:Response)=>{
-   try {
-     const result=await usersService.createUserDB(req.body);
+const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    res.status(httpStatus.CREATED).json({
-        success:true,
-        statusCode:httpStatus.CREATED,
-        message:"Users Register Successfull",
-        data:{
+    const result = await usersService.createUserDB(req.body);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "User registered successfully",
+        data: {
             result
         }
     })
 
-   } catch (error:any) {
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        success:false,
-        statusCode:httpStatus.INTERNAL_SERVER_ERROR,
-        message:"Users Register failed",
-        error:(error as Error).message
-    })
-   }
-}
+})
 
-export const usersController={
-    createUser
+
+const getUsersProfileMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const userProfile = await usersService.getUserProfileMe(req.user?.id as string);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "User profile retrieved successfully",
+        data: {
+            userProfile
+        }
+    })
+
+})
+
+const updateMyProfiles=catchAsync(async(req:Request,res:Response)=>{
+    const updateMyProfiles=await usersService.updateMyProfile(req.user?.id as string,req.body)
+
+    sendResponse(res,{
+         success: true,
+        statusCode: httpStatus.OK,
+        message: "User profile update successfully",
+        data: {
+            updateMyProfiles
+        }
+    })
+
+})
+
+export const usersController = {
+    createUser,
+    getUsersProfileMe,
+    updateMyProfiles
 }
